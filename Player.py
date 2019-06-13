@@ -2,6 +2,7 @@
 import pygame
 import math
 class Player(pygame.sprite.Sprite):
+    #Player constants
     FRICTION = 0.75
     MAX_VELOCITY = 5
     ACCELERATION = 1.5
@@ -11,11 +12,16 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         #Create an image surface
         self.image = pygame.Surface([width, width], pygame.SRCALPHA)
+        #If the player is the cop
         if player == 1:
+            #Blit the appropriate img
             self.image.blit(pygame.transform.scale(pygame.image.load("Graphics/Game Images/guard_image.png"), (width, width)), (0,0))
+        #Otherwise, player is the robber
         else:
+            #Blit the robber img
             self.image.blit(pygame.transform.scale(pygame.image.load("Graphics/Game Images/robber_image.png"), (width, width)), (0,0))
-
+        
+        #Various other variables to keep track of player
         self.original_image = self.image.copy()
         self.rect = self.image.get_rect()
         self.width = width
@@ -33,7 +39,7 @@ class Player(pygame.sprite.Sprite):
         # Calculate the vertical component of velocity
         self.yvel = self.yvel + self.ACCELERATION * math.sin(math.radians(-self.angle))
 
-        # Make sure the velocity doesn't go above the max velocity
+        # Make sure the velocities doesn't go above the max velocity
         if self.xvel > self.MAX_VELOCITY:
             self.xvel = self.MAX_VELOCITY
         if self.xvel < -self.MAX_VELOCITY:
@@ -42,32 +48,40 @@ class Player(pygame.sprite.Sprite):
             self.yvel = self.MAX_VELOCITY
         if self.yvel < -self.MAX_VELOCITY:
             self.yvel = -self.MAX_VELOCITY
-
+    
+    #Bounce player in the x direction by negating x velocity
     def bouncex(self):
         self.xvel = -self.xvel
-
+    
+    #Bounce player in the y direction by negating y velocity
     def bouncey(self):
         self.yvel = -self.yvel
-
+    
+    #Rotate player right and move right
     def move_right(self):
         self.angle = 0
         self.thrust()
-
+    
+    #Rotate player up and move up
     def move_up(self):
         self.angle = 90
         self.thrust()
-
+    
+    #Rotate player left and move left
     def move_left(self):
         self.angle = 180
         self.thrust()
-
+    
+    #Rotate player down and move down
     def move_down(self):
         self.angle = 270
         self.thrust()
-
+    
+    #Rotate player to a desired angle
     def rotate(self, angle):
         self.angle = angle
-
+    
+    #Move player according to what key was pressed
     def move(self, keys, player):
         if player == 1:
             if keys[pygame.K_a]:
@@ -87,10 +101,12 @@ class Player(pygame.sprite.Sprite):
                 self.move_up()
             if keys[pygame.K_DOWN]:
                 self.move_down()
-
+    
+    #Return position
     def get_position(self):
         return self.position
-
+    
+    #Set position of player
     def set_position(self, x, y):
         self.position = [x, y]
 
@@ -106,15 +122,19 @@ class Player(pygame.sprite.Sprite):
         # Decrease velocity every frame by the friction of the surface as long as its
         # greater than 0
         if self.deceleration:
+            #If x velocity is close to 0 just set to 0
             if -1 < self.xvel < 1:
                 self.xvel = 0
+            #Apply friction depending on direction
             elif self.xvel >= 1:
                 self.xvel -= self.FRICTION
             else:
                 self.xvel += self.FRICTION
-
+            
+            #If y velocity is close to 0 set to 0 exact
             if -1 < self.yvel < 1:
                 self.yvel = 0
+            #Apply friction depending on direction
             elif self.yvel >= 1:
                 self.yvel -= self.FRICTION
             else:
