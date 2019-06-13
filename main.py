@@ -17,28 +17,29 @@ def robberwin():#Prints robber win screen
     generate_text("The robber wins!",(WIDTH/2, HEIGHT/2),(0,0,0),font1)#Print the robber wins on sreen
 
 def guardwin():#Prints
-    load_image("Graphics/EndScreen/bars.jpg",(WIDTH/2,HEIGHT/2),2/3)
-    generate_text("The guard wins!", (WIDTH / 2, HEIGHT / 2),(30,144,255),font1)
+    load_image("Graphics/EndScreen/bars.jpg",(WIDTH/2,HEIGHT/2),2/3)#draw bars
+    generate_text("The guard wins!", (WIDTH / 2, HEIGHT / 2),(30,144,255),font1)#Print the guard wins
 
-def generate_text(text,postion,color,font):
-    text1 = font.render(text, False, color)
-    text1_rect = text1.get_rect(center=(postion))
-    screen.blit(text1,(text1_rect))
+def generate_text(text,postion,color,font):#Generates incoming text
+    text1 = font.render(text, False, color)#render text from incoming text and color
+    text1_rect = text1.get_rect(center=(postion))#center text
+    screen.blit(text1,(text1_rect))#blit text in center of screen
 
-def load_image(image,postion,diveded_scale):
-    image1 = pygame.image.load(image)
-    image1 = pygame.transform.smoothscale(image1, (int(WIDTH // diveded_scale), int(HEIGHT //diveded_scale)))
-    image1_rect = image1.get_rect(center=postion)
-    screen.blit(image1, image1_rect)
+def load_image(image,postion,diveded_scale):#Blit incoming images
+    image1 = pygame.image.load(image)#load the image
+    image1 = pygame.transform.smoothscale(image1, (int(WIDTH // diveded_scale), int(HEIGHT //diveded_scale)))#Scale the image
+    image1_rect = image1.get_rect(center=postion)#center image
+    screen.blit(image1, image1_rect)#blit image in center of screen
 #--------------------------------------------------------------------------------------------
 
-def create_walls():
+def create_walls():#Creates the map
     global door
-    Wall(0, 0, 32 * 32, 32, walls_sprites)
+    Wall(0, 0, 32 * 32, 32, walls_sprites)#For some reason there were walls in the map, these patch them up
     Wall(0, 0, 32, 32 * 32, walls_sprites)
     Wall(32 * 31, 0, 32, 32 * 32, walls_sprites)
     Wall(0, 32 * 31, 32 * 32, 32, walls_sprites)
-    #Wall(29 * 32, 27 * 32, 32*2, 32*2, tiles1, "Chair.png")
+    #create the decorations in the corner
+    #Wall(29 * 32, 27 * 32, 32*2, 32*2, tiles1, "Chair.png") 
     #Wall(29 * 32, (27-2) * 32, 32 * 2, 32 * 2, tiles1, "Checkers.png")
     #Wall(29 * 32, (27 + 2) * 32, 32 * 2, 32 * 2, tiles1, "Desk.png")
 
@@ -75,38 +76,39 @@ def create_walls():
                     Wall((x - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites)
                     width = 0
                     value = 0
-                if lines[y][x] == "1":
-                    Paintings(x * 32, y * 32, 32, 32, paintings_sprites, 1000)
-                elif lines[y][x] == "2":
+                if lines[y][x] == "1":#if its a 1 print basic painting
+                    Paintings(x * 32, y * 32, 32, 32, paintings_sprites, 1000)#create a basic painting in relation to where it is on the text document
+                    #and make it 32x32 pixels and group it into paintings_sprites group, 1000 points
+                elif lines[y][x] == "2":#If it's a 2 print medium painting
                     Paintings(x * 32, y * 32, 32, 32, paintings_sprites, 5000)
-                elif lines[y][x] == "3":
+                elif lines[y][x] == "3":#Print the super painting(2x2)
                     Paintings(x * 32, y * 32, 32 * 2, 32 * 2, paintings_sprites, 50000)
-                elif lines[y][x] == "d":
+                elif lines[y][x] == "d":#create an exit door
                     Wall(x * 32, y * 32, 32, 32, Exitdoors)
-                elif lines[y][x] == "w":
+                elif lines[y][x] == "w":#create a basic White tile if w
                     Wall(x*32, y*32,32, 32, tiles1,"White")
-                elif lines[y][x] == "E":
+                elif lines[y][x] == "E":#If E create the exitsign
                     Wall(x * 32, y * 32, 32, 32, Exits, "Exitsign.png",True)
-                if lines[y][x] == "K":
+                if lines[y][x] == "K":#If K create key
                     Key(x * 32, y * 32, 32, 32, paintings_sprites)
-                if lines[y][x] == "D" and lines[y][x-1] == "D":
-                    door=Door((x-1)*32, y*32, 32*2, 32, walls_sprites)
+                if lines[y][x] == "D" and lines[y][x-1] == "D":#if there are two Ds in a row, create a vault door(2x1)
+                    door=Door((x-1)*32, y*32, 32*2, 32, walls_sprites)#create a 2x1 door at the previous location in the walls_sprites group
                 current[x] = 0
         if width != 0:
             Wall((len(lines[0]) - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites)
-WIDTH_LIGHT = 30
-MAX_DISTANCE = 100
-FPS = 20
+WIDTH_LIGHT = 30 #Max width of light
+MAX_DISTANCE = 100 #Length of light
+FPS = 20#FPS Cap
 
-def calculate_angle(x1,y1,x2,y2):
-    if x1 - x2 != 0:
-        y = y1 - y2
-        x = x1 - x2
-        angle = math.degrees(math.atan(y / x))
-        if x < 0 and y > 0 or x < 0 and y < 0:
-            angle += 180
+def calculate_angle(x1,y1,x2,y2):#calculate angle between mouse and player
+    if x1 - x2 != 0:#if it's not 0(division error)
+        y = y1 - y2#get y component of vector
+        x = x1 - x2#get x component of vector
+        angle = math.degrees(math.atan(y / x))#get angle of slope
+        if x < 0 and y > 0 or x < 0 and y < 0:#Tangent math exception
+            angle += 180#add 180 to angle
         return angle
-    return None
+    return None#if it's zero, return none
 
 def get_light(center, angle):
     pointlist = [center]
