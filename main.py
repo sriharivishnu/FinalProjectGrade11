@@ -110,60 +110,61 @@ def calculate_angle(x1,y1,x2,y2):#calculate angle between mouse and player
         return angle
     return None#if it's zero, return none
 
-def get_light(center, angle):
-    pointlist = [center]
-    hit_player = False
-    for x in range(-1*WIDTH_LIGHT, WIDTH_LIGHT+1,2):
-        current = angle + x
-        hit = False
-        targetposy = center[1] + (2 * math.sin(math.radians(current)) * MAX_DISTANCE)
+def get_light(center, angle)#Raycasting Function
+    pointlist = [center]#Add the Player's location to the list of points to create the polygon(make the flashlight originate from the
+    #character)
+    hit_player = False#Used in testing if player has been seen by flashlight
+    for x in range(-1*WIDTH_LIGHT, WIDTH_LIGHT+1,2):#Test in a range of angles, test every other angle
+        current = angle + x#current angle
+        hit = False#used for double break
+        targetposy = center[1] + (2 * math.sin(math.radians(current)) * MAX_DISTANCE)#target of ray being cast out
         targetposx = center[0] + (2 * math.cos(math.radians(current)) * MAX_DISTANCE)
-        xdisp = (targetposx - center[0]) / MAX_DISTANCE
+        xdisp = (targetposx - center[0]) / MAX_DISTANCE#speed of ray
         ydisp = (targetposy - center[1]) / MAX_DISTANCE
-        for y in range(0,MAX_DISTANCE,2):
-            for wall in renderlist:
-                point = [center[0] + xdisp * y, center[1] + ydisp * y]
-                if camera.apply(wall).collidepoint(point[0], point[1]):
-                    pointlist.append(point)
-                    hit = True
+        for y in range(0,MAX_DISTANCE,2):#test multiple points between the player and the target position to see if they hit a wall/player
+            for wall in renderlist:#check if that point is hitting any wall that's in a rectangular area in front of the player
+                point = [center[0] + xdisp * y, center[1] + ydisp * y]#creates the current point that is checking collision
+                if camera.apply(wall).collidepoint(point[0], point[1]):#if the point collides with a wall
+                    pointlist.append(point)#append it to the list of points for the polygon
+                    hit = True#Double Break/new angle
                     break
-                if camera.apply(player2).collidepoint(point[0], point[1]):
-                    pointlist.append(point)
-                    hit = True
-                    hit_player = True
+                if camera.apply(player2).collidepoint(point[0], point[1]):#if the point collides with a player
+                    pointlist.append(point)#append the point to the list of points
+                    hit = True#double break
+                    hit_player = True#used for making the player appear
                     break
             if hit:
-                break
+                break#double break
         if not hit:
-            pointlist.append([targetposx, targetposy])
-
+            pointlist.append([targetposx, targetposy])#if nothing has been hit append the target position to the list of points
+            #acts as "uninterupted" light
     if not hit_player:
         hit_player = False
 
-    return pointlist, hit_player
+    return pointlist, hit_player#return list for polygon, hit_player for showing the Robber on the Guard's screen
 
-def tilesrender():
-    for tile in tiles1:
-        if camera.apply(player2).colliderect(camera.apply(tile)):
-            return True
-    return False
+def tilesrender():#Test if player collides with a lit up decorative tile
+    for tile in tiles1:#for every tile in decorative tile lest
+        if camera.apply(player2).colliderect(camera.apply(tile)):#if the robber is inside a decorative tile
+            return True#blit the robber on the other player's sceen
+    return False#else don't
 
 
-def check_collisions():
-    copy = player.rect.copy()
+def check_collisions():#check for collision of guard with walls and doors
+    copy = player.rect.copy()#create a copy of the player's rect
     copy2 = player.rect.copy()
     collidesx = False
     collidesy = False
-    copy.x = position[0] + player.xvel - player.rect.width / 2
+    copy.x = position[0] + player.xvel - player.rect.width / 2#creates a predictioon of the player's next location
     copy2.y = position[1] + player.yvel - player.rect.height / 2
-    for wall in renderlist:
-        if camera.apply_rect(copy).colliderect(camera.apply(wall)):
+    for wall in renderlist:#for each wall that is in an area in front of the Guard, a bit around him
+        if camera.apply_rect(copy).colliderect(camera.apply(wall)):#if the player is about to collide with a wall in the x plane
             collidesx = True
-            player.bouncex()
-        if camera.apply_rect(copy2).colliderect(camera.apply(wall)):
+            player.bouncex()#reverse x velocity
+        if camera.apply_rect(copy2).colliderect(camera.apply(wall)):#if the player is about to collide with a wall in the y plane
             collidesy = True
-            player.bouncey()
-    if Exitdoors:
+            player.bouncey()#reverse y velocity
+    if Exitdoors:#same as above but with Exitdoors(act as walls but can be opened)
         for wall in Exitdoors:
             if camera.apply_rect(copy).colliderect(camera.apply(wall)):
                 collidesx = True
@@ -171,13 +172,14 @@ def check_collisions():
             if camera.apply_rect(copy2).colliderect(camera.apply(wall)):
                 collidesy = True
                 player.bouncey()
-
+    #If the Guard has not collided with anything, keep the same velocity.
     if not collidesx:
         player.position[0] += player.xvel
 
     if not collidesy:
         player.position[1] += player.yvel
 
+#same as above check_collision() but with Robber
 def check_collisions2():
     copy = player2.rect.copy()
     copy2 = player2.rect.copy()
@@ -207,35 +209,40 @@ def check_collisions2():
     if not collidesy:
         player2.position[1] += player2.yvel
 
-def create_render():
+def create_render():#creates the odd shaped render box 
     changex = 0
     changey = 0
+    #gets the positions of the edges of the flashlight from angle between mouse and Guard, taking the extremes of the angle(left most of flashlight, rightmost of flashlight.
     targetposy1 = actual.y + (2 * math.sin(math.radians(targetangle + -1 * WIDTH_LIGHT)) * (MAX_DISTANCE + 20))
     targetposx1 = actual.x + (2 * math.cos(math.radians(targetangle + -1 * WIDTH_LIGHT)) * (MAX_DISTANCE + 20))
     targetposx2 = actual.x + (2 * math.cos(math.radians(targetangle + WIDTH_LIGHT)) * (MAX_DISTANCE + 20))
     targetposy2 = actual.y + (2 * math.sin(math.radians(targetangle + WIDTH_LIGHT)) * (MAX_DISTANCE + 20))
-    maxx = max(targetposx1, targetposx2, actual.x)
-    miny = min(targetposy1, targetposy2, actual.y)
-    minx = min(targetposx1, targetposx2, actual.x)
-    maxy = max(targetposy1, targetposy2, actual.y)
-    diffx = maxx - minx
-    diffy = maxy - miny
+    maxx = max(targetposx1, targetposx2, actual.x)#Get the biggest x coordinate
+    miny = min(targetposy1, targetposy2, actual.y)#Smallest y
+    minx = min(targetposx1, targetposx2, actual.x)#Smallest x
+    maxy = max(targetposy1, targetposy2, actual.y)#Biggest y
+    diffx = maxx - minx#distance between biggest x, smallest y
+    diffy = maxy - miny#distance between biggest y, smallest y
+    
+    #create a box with the corner of biggest x, smallest y coordinate and lengths of differences between extremes
     return pygame.Rect(maxx + changex - MAX_DISTANCE*2, miny + changey, diffx,diffy)
 
 def update_screen():
     # rendering for player 1
-    for sprite in walls_sprites:
+    for sprite in walls_sprites:#for every wall
+        #if the wall is within the render boxes(1 in direction of player, other very small one around the player
         if render.colliderect(camera.apply(sprite)) or renderwalls.colliderect(camera.apply(sprite)):
-            renderlist.add(sprite)  # also have to add a second hitbox behind player so they can run into walls
-        else:
-            renderlist.remove(sprite)
-    for painting in paintings_sprites:
+            renderlist.add(sprite)#add the wall to the renderlist so it will be rendered, used for flashlight raytracing
+        else:#otherwise
+            renderlist.remove(sprite)#don't render the wall/use for flashlight raytracing
+    for painting in paintings_sprites:#same as wall rendering, but instead rendering paintings
         if render.colliderect(camera.apply(painting)) or renderwalls.colliderect(camera.apply(painting)):
             paintrenderlist.add(painting)
         else:
             paintrenderlist.remove(painting)
 
     # rendering for player 2
+    #same as rendering for player 1, but with a single hitbox in a larger area
     for sprite in walls_sprites_player2:
         if render2.colliderect(camera2.apply(sprite)):
             renderlist_player2.add(sprite)
@@ -246,38 +253,45 @@ def update_screen():
             paintrenderlist_player2.add(painting)
         else:
             paintrenderlist_player2.remove(painting)
-
+    
+    #update player sprites
     sprites.update()
     sprites2.update()
+    
+    #update the cameras
     camera.update(player, WIDTH, HEIGHT)
     camera2.update(player2, WIDTH, HEIGHT)
 
-def draw_screen():
+def draw_screen():#draw the screens
     global health
     global seen
-    screen.fill((255,255,255))
-    box_surface_fill = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-    player1surface.fill((0, 0, 0))
-    player2surface.fill((123, 204, 128))
-    pygame.draw.polygon(box_surface_fill, (255, 255, 100, max(0, min(brightness, 255))), pointlist)
-    player1surface.blit(box_surface_fill, (0, 0))
-    if Exitdoors:
-        for tile in Exitdoors:
+    screen.fill((255,255,255))#fill the screen
+    box_surface_fill = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)#used for creating a transparent flashlight
+    player1surface.fill((0, 0, 0))#fill first player split screen with black(darkness)
+    player2surface.fill((123, 204, 128))#other with green (night vision)
+    pygame.draw.polygon(box_surface_fill, (255, 255, 100, max(0, min(brightness, 255))), pointlist)#draw a polygon/flashlight 
+    #using collision pointlist
+    player1surface.blit(box_surface_fill, (0, 0))#blit the flashlight surface on the Guard's screen
+    if Exitdoors:#If there are any exidoors(may be killed after getting enough points)
+        for tile in Exitdoors:#For every exitdoor
+            #blit the Exidoors on both player's surfaces
             player1surface.blit(tile.image, camera.apply(tile))
             player2surface.blit(tile.image, camera2.apply(tile))
-    for tile in tiles1:
+    
+    for tile in tiles1:#For every decorative tile
+        #blit decorative tile on both screens
         player1surface.blit(tile.image, camera.apply(tile))
         player2surface.blit(tile.image, camera2.apply(tile))
-    for sprite in sprites:
+    for sprite in sprites:#blits Guard on Guard Screen
         player1surface.blit(sprite.image, camera.apply(sprite))
-    for wall in renderlist:
-        player1surface.blit(wall.image, camera.apply(wall))
-    for painting in paintrenderlist:
+    for wall in renderlist:#For all walls in the first player's render area
+        player1surface.blit(wall.image, camera.apply(wall))#blit the wall
+    for painting in paintrenderlist:#same as above but for painting
         player1surface.blit(painting.image, camera.apply(painting))
-    if battery>=10:
-        for wall in renderlist_player2:
-            player2surface.blit(wall.image,camera2.apply(wall))
-        for painting in paintrenderlist_player2:
+    if battery>=10:#If the robber's night vision is charged
+        for wall in renderlist_player2:#for every wall on the Robber's Screen
+            player2surface.blit(wall.image,camera2.apply(wall))#blit the wall
+        for painting in paintrenderlist_player2:#For paintings on the robbe
             player2surface.blit(painting.image,camera2.apply(painting))
             player2surface.blit(player2.image,camera2.apply(player2))
             player2surface.blit(player.image, camera2.apply(player))
