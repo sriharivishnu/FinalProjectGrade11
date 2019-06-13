@@ -1,12 +1,14 @@
 import pygame
-# Player class to define players
+# Wall class to define walls
 class Wall(pygame.sprite.Sprite):
+    #Init position, dimensions
     def __init__(self, x,y, width, height, group,image=None,small=None):
         self.groups = group
+        #Init from super class
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.image = pygame.Surface((width,height),pygame.SRCALPHA)
 
-
+        
         if image!=None:
             if image=="White":
                 self.image.fill((255,255,255))
@@ -20,6 +22,7 @@ class Wall(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+#Door class
 class Door(pygame.sprite.Sprite):
     def __init__(self, x,y, width, height, group):
         self.groups = group
@@ -29,9 +32,7 @@ class Door(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-
-
-
+#Map class to handle map
 class Map:
     def __init__(self):
         self.map_data = []
