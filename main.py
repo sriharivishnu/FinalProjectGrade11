@@ -573,18 +573,24 @@ while not crashed:
     pygame.display.flip() #update screen
 
 done=False
+
+#create 2 fonts for the endscreen
 font1 = pygame.font.SysFont("Arial", 60)
 font2 = pygame.font.SysFont("Arial", 80)
+
+
 WIDTH=500
 HEIGHT=500
+
+
 while not done:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-    if win==True:
-        robberwin()
-    else:
-        guardwin()
-    printscore()
-    generate_text("Game over",(WIDTH / 2, HEIGHT / 3),(0,125,0),font2)
-    pygame.display.flip()
+        if event.type == pygame.QUIT:#if you press quit
+            done = True#quit the game
+    if win==True:#if the robber won
+        robberwin()#call robberwin
+    else:#else
+        guardwin()#call guardwin
+    printscore()#print score
+    generate_text("Game over",(WIDTH / 2, HEIGHT / 3),(0,125,0),font2)#print Game over
+    pygame.display.flip() #update screen
