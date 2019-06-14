@@ -4,7 +4,9 @@ from Map import *
 from Paintings import *
 from Player import *
 from Button import *
-#for printing end
+Guardwins =pygame.image.load("Guardwins.png")#render jail cell for endscreen when Guard wins
+Mugshot=pygame.transform.scale(pygame.image.load("Mugshot.png"),(200,300))#render prisoner/Robber for endscreen when Guard wins
+
 def printscore():#Prints score on endscreen
     generate_text("$"+str(player2_score),(WIDTH/2,400),(255,0,0),font1)#calls generate_text
 
