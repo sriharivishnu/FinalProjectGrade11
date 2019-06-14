@@ -582,15 +582,23 @@ font2 = pygame.font.SysFont("Arial", 80)
 WIDTH=500
 HEIGHT=500
 
+Firsttime=True
 
-while not done:
-    for event in pygame.event.get():
+while not done: #final loop for endscreen
+
+    for event in pygame.event.get():#event loop for pressing quit
         if event.type == pygame.QUIT:#if you press quit
-            done = True#quit the game
-    if win==True:#if the robber won
-        robberwin()#call robberwin
-    else:#else
-        guardwin()#call guardwin
-    printscore()#print score
-    generate_text("Game over",(WIDTH / 2, HEIGHT / 3),(0,125,0),font2)#print Game over
-    pygame.display.flip() #update screen
+            done = True # quit the loop, game
+    if win==True: #if the Robber won
+        robberwin() #print the robberwin screen
+        printscore() #print the score
+        generate_text("game over", (WIDTH / 2, HEIGHT / 3 - 50), (0, 125, 0), font2) #print "game over"
+    elif win==False and Firsttime: #Firstime so it only runs once
+        pygame.mixer.music.load("Prison cell door sound effect.mp3")#load jail cell noise
+        pygame.mixer.music.play(0)#play once
+        for m in range(-500,0,2):#move a cage gradually over a mugshot of a thief
+            screen.fill((255, 255, 255)) #fill the screen with white
+            screen.blit(Mugshot,(300,HEIGHT-300))#blit mugshot of robber
+            screen.blit(Guardwins,(200,0+m))#blit the cage, with displacement m to make it seem like it's going down
+            pygame.display.flip()#update screen
+        Firsttime=False#make it so that it won't run again, will stay at a still image of a jail cell over the criminal
