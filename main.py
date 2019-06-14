@@ -4,8 +4,8 @@ from Map import *
 from Paintings import *
 from Player import *
 from Button import *
-Guardwins =pygame.image.load("Guardwins.png")#render jail cell for endscreen when Guard wins
-Mugshot=pygame.transform.scale(pygame.image.load("Mugshot.png"),(200,300))#render prisoner/Robber for endscreen when Guard wins
+Guardwins =pygame.image.load("Graphics/EndScreen/Guardwins.png")#render jail cell for endscreen when Guard wins
+Mugshot=pygame.transform.scale(pygame.image.load("Graphics/EndScreen/Mugshot.png"),(200,300))#render prisoner/Robber for endscreen when Guard wins
 
 def printscore():#Prints score on endscreen
     generate_text("$"+str(player2_score),(WIDTH/2,400),(255,0,0),font1)#calls generate_text
@@ -118,7 +118,7 @@ def calculate_angle(x1,y1,x2,y2):#calculate angle between mouse and player
         return angle
     return None#if it's zero, return none
 
-def get_light(center, angle)#Raycasting Function
+def get_light(center, angle):#Raycasting Function
     pointlist = [center]#Add the Player's location to the list of points to create the polygon(make the flashlight originate from the
     #character)
     hit_player = False#Used in testing if player has been seen by flashlight
@@ -345,7 +345,7 @@ pygame.mixer.init()
 
 pygame.mixer.music.load("Audio/Alert theme.mp3")
 
-health=5#health of Robber
+health=2.5#health of Robber
 Notification=pygame.image.load("Graphics/Game Images/Notification.png")#Load notification image
 Night_vision=pygame.transform.scale(pygame.image.load("Graphics/Game Images/Night Vision Scope.png"),(700,700))#Adds night vision effect
 
@@ -602,7 +602,7 @@ while not done: #final loop for endscreen
         printscore() #print the score
         generate_text("game over", (WIDTH / 2, HEIGHT / 3 - 50), (0, 125, 0), font2) #print "game over"
     elif win==False and Firsttime: #Firstime so it only runs once
-        pygame.mixer.music.load("Prison cell door sound effect.mp3")#load jail cell noise
+        pygame.mixer.music.load("Audio/Prison Cell Door sound effect.mp3")#load jail cell noise
         pygame.mixer.music.play(0)#play once
         for m in range(-500,0,2):#move a cage gradually over a mugshot of a thief
             screen.fill((255, 255, 255)) #fill the screen with white
