@@ -453,11 +453,15 @@ while Unclicked:#loop for instrucctions
     if disp>=1000: #if a road has moved across the entire screen 
         disp=0 #loop it around/teleport it to the start again to give an infinite road effect
     screen.fill((0, 0, 0))
+    
+    #blit roads, car with displacement
     screen.blit(road, (0-disp, 0))
     screen.blit(road2, (0+1000 - disp, 0))
     screen.blit(car,(WIDTH//2-cardisp,HEIGHT//2+100-cardispy))
+    
+    #flip through slides
     if slide==1:
-        robberinstructions=pygame.image.load("Graphics/Intro Images/Robberslide1.png")
+        robberinstructions=pygame.image.load("Graphics/Intro Images/Robberslide1.png")#load associated slide
     elif slide==2:
         robberinstructions=pygame.image.load("Graphics/Intro Images/Robberslide2.png")
     elif slide==3:
@@ -465,24 +469,28 @@ while Unclicked:#loop for instrucctions
     elif slide==4:
         robberinstructions=pygame.image.load("Graphics/Intro Images/Robberslide4.png")
     else:
-        screen.blit(button.surface,(button.x,button.y))
-    screen.blit(robberinstructions,(0,0))
-    pygame.display.flip()
-Unclicked=True
+        screen.blit(button.surface,(button.x,button.y))#on final slide show the button
+    screen.blit(robberinstructions,(0,0))#blit currently loaded slide
+    pygame.display.flip()#update screen
+    
+Unclicked=True#make unclicked true again
 Guardinstructions=pygame.image.load("Graphics/Intro Images/Guardinstructions.png")
-button=buttons(180,50,(255,255,0),"Click to continue",350,450,(0,0,0),"Arial",28)
-while Unclicked:
+button=buttons(180,50,(255,255,0),"Click to continue",350,450,(0,0,0),"Arial",28)#create new button in different location
+
+while Unclicked:#loop for showing instructions for guard
     for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if button.rect.collidepoint(pygame.mouse.get_pos()):
-                Unclicked=False
-    screen.fill((255,255,255))
-    screen.blit(Guardinstructions,(0,0))
-    screen.blit(button.surface,(button.x,button.y))
-    pygame.display.flip()
+        if event.type == pygame.MOUSEBUTTONDOWN:#if the mouse is clicked
+            if button.rect.collidepoint(pygame.mouse.get_pos()):#if you clicked on a button
+                Unclicked=False#exit the loop, get into main game loop
+    screen.fill((255,255,255))#fill screen with white
+    screen.blit(Guardinstructions,(0,0))#blit guard instructions
+    screen.blit(button.surface,(button.x,button.y))#blit button
+    pygame.display.flip()#update screen
 #End of introduction--------------------------------------------------------------------------------------
 
 win=False
+
+#MAIN LOOP------------------------------------------------------------------------------------------------
 while not crashed:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
