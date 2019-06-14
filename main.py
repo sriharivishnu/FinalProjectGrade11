@@ -44,38 +44,44 @@ def create_walls():#Creates the map
     #Wall(29 * 32, 27 * 32, 32*2, 32*2, tiles1, "Chair.png") 
     #Wall(29 * 32, (27-2) * 32, 32 * 2, 32 * 2, tiles1, "Checkers.png")
     #Wall(29 * 32, (27 + 2) * 32, 32 * 2, 32 * 2, tiles1, "Desk.png")
-
+    
+    #Read in map from map file
     lines = map.map_data.copy()
     lines.append(["." for z in range(len(lines[0]))])
+    #Initialize array to hold temporary values of rect dimensions (Dynamic programming)
     current = [0 for z in range(len(lines[0]))]
+    #Set array to initial values
     for x in range(len(lines[0])):
+        #If there is a wall at the specified position add one in the respective position in the array
         if lines[0][x] == "#":
             current[x] += 1
     for y in range(1, len(lines)):
+        #Set the width and height of the rectangle to 0
         width = 0
         value = 0
         for x in range(32):
             if lines[y][x] == "#":
+                #If the width of a previous rectangle exists
                 if width != 0:
-                    Wall((x - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites)
+                    Wall((x - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites) #Create the wall
                     width = 0
                     value = 0
-                current[x] += 1
+                current[x] += 1 #Add one to the temporary array
 
             else:
-                if lines[y - 1][x] == "#":
+                if lines[y - 1][x] == "#": #If the line above is a wall
                     if value == 0:
-                        value = current[x]
-                        width += 1
+                        value = current[x] #Height is of the previous wall
+                        width += 1 #Add one to width of rectangle
                     else:
                         if current[x] != value:
-                            Wall((x - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites)
-                            value = current[x]
-                            width = 1
+                            Wall((x - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites) #Create wall
+                            value = current[x] #Height is of the previous wall
+                            width = 1 #New width
                         else:
-                            width += 1
+                            width += 1 #Add one to width
                 elif lines[y - 1][x] != "#" and width != 0:
-                    Wall((x - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites)
+                    Wall((x - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites) #Create new wall
                     width = 0
                     value = 0
                 if lines[y][x] == "1":#if its a 1 print basic painting
@@ -96,8 +102,8 @@ def create_walls():#Creates the map
                 if lines[y][x] == "D" and lines[y][x-1] == "D":#if there are two Ds in a row, create a vault door(2x1)
                     door=Door((x-1)*32, y*32, 32*2, 32, walls_sprites)#create a 2x1 door at the previous location in the walls_sprites group
                 current[x] = 0
-        if width != 0:
-            Wall((len(lines[0]) - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites)
+        if width != 0: #If there is still a wall not created
+            Wall((len(lines[0]) - width) * 32, (y - value) * 32, width * 32, value * 32, walls_sprites) #Create wall
 WIDTH_LIGHT = 30 #Max width of light
 MAX_DISTANCE = 100 #Length of light
 FPS = 20#FPS Cap
