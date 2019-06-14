@@ -492,76 +492,85 @@ win=False
 
 #MAIN LOOP------------------------------------------------------------------------------------------------
 while not crashed:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            crashed = True
-        if event.type == pygame.MOUSEMOTION:
-            mouse_position = event.pos
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_f:
+    for event in pygame.event.get():#main event loop
+        if event.type == pygame.QUIT:#if you press quit, quit the game
+            crashed = True#end the game loop 
+        if event.type == pygame.MOUSEMOTION:#if you move your mouse
+            mouse_position = event.pos#get a new mouse position
+        if event.type == pygame.KEYDOWN:#if you press down a button
+            if event.key == pygame.K_f:#if it's f charge the Night vision
                 charging=True
-            elif charging!=True:
-                if event.key == pygame.K_SPACE:
-                    for painting in paintrenderlist_player2:
-                        if camera2.apply(player2).colliderect(camera2.apply(painting)):
+            elif charging!=True:#If you are not holding down the f button(to keep Robber from charging Night vision and moving)
+                if event.key == pygame.K_SPACE:#if the player presses space
+                    for painting in paintrenderlist_player2:#for every painting that is visible for the player
+                        if camera2.apply(player2).colliderect(camera2.apply(painting)):#check what painting the player is ontop of
+                            #kill the painting from all groups
                             paintings_sprites_player2.remove(painting)
                             paintrenderlist_player2.remove(painting)
                             paintings_sprites.remove(painting)
                             paintrenderlist.remove(painting)
-                            player2_score += painting.points
-                            if painting.points == 0:
-                                key_obtained = True
-                                print("bruh")
-                                door.rect.x=1000000
-                            break
+                            
+                            player2_score += painting.points#add the painting's score to the Robber's score
+                            
+                            if painting.points == 0:#if it has 0 points(meaning it's a key)
+                                key_obtained = True #state that the key has been obtained
+                                door.rect.x=1000000#move the door off the map so that it's "open"
+                            break#stop searching for paintings
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_f:
-                charging=False
+        if event.type == pygame.KEYUP:#if you unpress key
+            if event.key == pygame.K_f:#if it's the f key
+                charging=False#stop charging
 
 
-    player.move(pygame.key.get_pressed(), 2)
-    if not charging:
-        player2.move(pygame.key.get_pressed(), 1)
-
-    #Doesnt matter
+    player.move(pygame.key.get_pressed(), 2)#move player according to their key press
+    if not charging: #If you are not holding down the f button(to keep Robber from charging Night vision and moving)
+        player2.move(pygame.key.get_pressed(), 1)#same as player.move but with Robber
+    
+    #position of players
     position = player.get_position()
     position2 = player2.get_position()
-    actual = camera.apply(player)
+    
+    actual = camera.apply(player)#actual position of player in relation to the map
+    
+    #calculate new angle
     new_angle = calculate_angle(mouse_position[0], mouse_position[1], actual.x + player.width+WIDTH//2, actual.y + player.width)
     if new_angle:
         targetangle = new_angle
-
-    player.rotate(-targetangle)
-    render = create_render()
-    actual2 = camera2.apply(player2)
-    render2.center = [WIDTH//4,HEIGHT//2]
-    pointlist,flash_collide = get_light([actual.x + player.width // 2, actual.y + player.width // 2], targetangle)
-    renderwalls.center=[actual.x+10,actual.y+10]
+    
+    
+    player.rotate(-targetangle)#rotate Guard to the mouse
+    render = create_render()#creates render box for player 1 (flashlight render shape)
+    actual2 = camera2.apply(player2)#actual position of player 2 in relation to the map
+    render2.center = [WIDTH//4,HEIGHT//2]#center of the render box for the Robber
+    pointlist,flash_collide = get_light([actual.x + player.width // 2, actual.y + player.width // 2], targetangle)#draw flashlight
+    renderwalls.center=[actual.x+10,actual.y+10]#the center of the small render box for the Guard becomes the player's center
+    
+    #check collisions for both players
     check_collisions()
     check_collisions2()
-    #---------------------------------------
-    draw_screen()
+
+    draw_screen()#draw screen
     update_screen()
-    clock.tick(FPS)
-    if battery>0:
-        battery-=0.5
-    if charging and battery<200:
-        battery += 1.5
-    if battery>20:
-        night_vision_counter = font.render(str(round(((battery/200)*100)))+"% Charge", True, (255,255,255), (0, 0, 0))
+    clock.tick(FPS)#limit clock at the FPS cap
+    if battery>0: #if the battery is not at 0
+        battery-=0.5 #decrease the battery by 0.5
+    if charging and battery<200:#if the player is holding f and they aren't fully charged
+        battery += 1.5 #charge the battery 1.5
+    if battery>20:#if the battery is above 20
+        night_vision_counter = font.render(str(round(((battery/200)*100)))+"% Charge", True, (255,255,255), (0, 0, 0)) #make the charge black
+         #the charge is displayed as a percent of the maximum charge
     else:
         night_vision_counter = font.render(str(round(((battery / 200) * 100))) + "% Charge", True, (255, 0, 0),
-                                           (0, 0, 0))
-    screen.blit(night_vision_counter, (0, 0))
-    if player2_score>=20000:
-        Exitdoors=None
-        if player2.get_position()[0]<=0:
-            win=True#put win here
-            crashed=True
-    if health<=0:
-        crashed=True
-    pygame.display.flip()
+                                           (0, 0, 0)) #else make it red
+    screen.blit(night_vision_counter, (0, 0)) #blit the percent charge
+    if player2_score>=20000: #if the Robber has a score of atleast 20000
+        Exitdoors=None #kill all the doors in Exitdoors group so Robber can escape
+        if player2.get_position()[0]<=0: #if the player is out of the map
+            win=True #they win
+            crashed=True #exit the game loop
+    if health<=0:#if the Robber is caught
+        crashed=True #exit the game loop without win=True (Robber looses)
+    pygame.display.flip() #update screen
 
 done=False
 font1 = pygame.font.SysFont("Arial", 60)
