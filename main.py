@@ -41,9 +41,9 @@ def create_walls():#Creates the map
     Wall(32 * 31, 0, 32, 32 * 32, walls_sprites)
     Wall(0, 32 * 31, 32 * 32, 32, walls_sprites)
     #create the decorations in the corner
-    #Wall(29 * 32, 27 * 32, 32*2, 32*2, tiles1, "Chair.png") 
-    #Wall(29 * 32, (27-2) * 32, 32 * 2, 32 * 2, tiles1, "Checkers.png")
-    #Wall(29 * 32, (27 + 2) * 32, 32 * 2, 32 * 2, tiles1, "Desk.png")
+    Wall(29 * 32, 27 * 32, 32*2, 32*2, tiles1, "Graphics/Game Images/Chair.png") 
+    Wall(29 * 32, (27-2) * 32, 32 * 2, 32 * 2, tiles1, "Graphics/Game Images/Checkers.png")
+    Wall(29 * 32, (27 + 2) * 32, 32 * 2, 32 * 2, tiles1, "Graphics/Game Images/Desk.png")
     
     #Read in map from map file
     lines = map.map_data.copy()
@@ -378,7 +378,7 @@ player = Player([500,500], 20, 1)#Create player sprites/Note:use first two varia
 sprites.add(player)
 player2 = Player([700, 700], 20, 2)#same as above
 sprites2.add(player2)
-render = pygame.Rect(WIDTH/2 - MAX_DISTANCE * 2, HEIGHT/2 - MAX_DISTANCE * 2, MAX_DISTANCE * 4,MAX_DISTANCE * 4)#???????????
+render = pygame.Rect(WIDTH/2 - MAX_DISTANCE * 2, HEIGHT/2 - MAX_DISTANCE * 2, MAX_DISTANCE * 4,MAX_DISTANCE * 4)
 render2 = pygame.Rect((0,0),([WIDTH/2,HEIGHT]))#render box for the entire splitscreen of Robber
 renderwalls=pygame.Rect(0, 0, 50,50)#render small player1 render box
 
