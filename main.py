@@ -291,116 +291,134 @@ def draw_screen():#draw the screens
     if battery>=10:#If the robber's night vision is charged
         for wall in renderlist_player2:#for every wall on the Robber's Screen
             player2surface.blit(wall.image,camera2.apply(wall))#blit the wall
-        for painting in paintrenderlist_player2:#For paintings on the robbe
-            player2surface.blit(painting.image,camera2.apply(painting))
-            player2surface.blit(player2.image,camera2.apply(player2))
-            player2surface.blit(player.image, camera2.apply(player))
-    if battery<=0:
-        player2surface.fill((0,0,0))
-        player2surface.blit(Notification,(0,0))
+        for painting in paintrenderlist_player2:#For paintings on the robber's screen
+            player2surface.blit(painting.image,camera2.apply(painting))#blit the painting
+        #Blits both of the players on the Robber's screen   
+        player2surface.blit(player2.image,camera2.apply(player2))
+        player2surface.blit(player.image, camera2.apply(player))
+
+    if battery<=0:#if the player's battery is completely out
+        player2surface.fill((0,0,0))#make the player's screen black
+        player2surface.blit(Notification,(0,0))#display a notification for them to charge
     else:
-        player2surface.blit(Night_vision, (-100, -100))
-    for Exitss in Exits:
-        player1surface.blit(Exitss.image, camera.apply(Exitss))
+        player2surface.blit(Night_vision, (-100, -100))#if it's not out blit the transparent night vision scope
+    for Exitss in Exits:#for all exit signs
+        player1surface.blit(Exitss.image, camera.apply(Exitss))#blit exit sign
         player2surface.blit(Exitss.image, camera2.apply(Exitss))
     if flash_collide or tilesrender():
         if flash_collide:
             health-=.05
         player1surface.blit(player2.image, camera.apply(player2))#draw player on other side
-        if seen!=True:
+        if seen!=True:#if you are seen for the first time
             seen=True
-            pygame.mixer.music.play()
+            pygame.mixer.music.play()#Play alert theme
 
-        if battery<=0:
-            player2surface.blit(player2.image, camera2.apply(player2))
-    box_surface_fill = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-    pygame.draw.polygon(box_surface_fill, (200, 255, 200, max(0, min(brightness, 255))), pointlist)
-    player2surface.blit(box_surface_fill, (-camera.camera.x + camera2.camera.x, -camera.camera.y + camera2.camera.y))
+        if battery<=0:#if the player's night vision is down, they are in flashlight
+            player2surface.blit(player2.image, camera2.apply(player2))#make them appear
+
+    box_surface_fill = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)#create the surface on which the flashlight is blitted(for enemy)
+    pygame.draw.polygon(box_surface_fill, (200, 255, 200, max(0, min(brightness, 255))), pointlist)#This time it is white to simulate
+    #bright light when using night vision
+    player2surface.blit(box_surface_fill, (-camera.camera.x + camera2.camera.x, -camera.camera.y + camera2.camera.y))#^
+    #blit both splitscreens on screen
     screen.blit(player2surface,(0,0))
     screen.blit(player1surface, (WIDTH//2, 0))
 
+#Width, Height of screen
 WIDTH = 1000
 HEIGHT = 500
 
+#split screeens half the screen
 player1surface=pygame.Surface([WIDTH/2,HEIGHT])#Player 1 split screen side
 player2surface=pygame.Surface([WIDTH/2,HEIGHT])#Player 2 split screen side
+
 pygame.init()
 pygame.mixer.init()
-#Load assortment of images to be randomally put on paintings
 
 pygame.mixer.music.load("Audio/Alert theme.mp3")
 
-health=5
-Notification=pygame.image.load("Graphics/Game Images/Notification.png")
+health=5#health of Robber
+Notification=pygame.image.load("Graphics/Game Images/Notification.png")#Load notification image
 Night_vision=pygame.transform.scale(pygame.image.load("Graphics/Game Images/Night Vision Scope.png"),(700,700))#Adds night vision effect
-#Side note: Might need to be more transparent or blit images on top of this as painting frame colors are hard to see
 
-screen = pygame.display.set_mode([WIDTH, HEIGHT])
+screen = pygame.display.set_mode([WIDTH, HEIGHT])#create screen
 
 walls = []
 map = Map()
-tiles1=pygame.sprite.Group()
-Exits=pygame.sprite.Group()
-Exitdoors=pygame.sprite.Group()
+
+#create the sprite groups
+tiles1=pygame.sprite.Group()#group for decorative tiles
+Exits=pygame.sprite.Group()#Exit sign group
+Exitdoors=pygame.sprite.Group()#Exit doors group
 center = [WIDTH/2, HEIGHT/2]
 mouse_position = center
-sprites = pygame.sprite.Group()
-renderlist = pygame.sprite.Group()
-paintrenderlist=pygame.sprite.Group()
-renderlist_player2= pygame.sprite.Group()
-walls_sprites = pygame.sprite.Group()
-paintings_sprites = pygame.sprite.Group()
-paintrenderlist_player2=pygame.sprite.Group()
-door = [0]
-create_walls()
+sprites = pygame.sprite.Group()#Group for player sprites
+renderlist = pygame.sprite.Group()#Render list for walls
+paintrenderlist=pygame.sprite.Group()#Render list for paintings
+renderlist_player2= pygame.sprite.Group()#Render list for player 2 walls
+walls_sprites = pygame.sprite.Group()#Group for walls
+paintings_sprites = pygame.sprite.Group()#Painting sprite group
+paintrenderlist_player2=pygame.sprite.Group()#render list for player two paintings
+door = [0]#This is needed for some weird reason
+create_walls()#Create the map
 
+#Create copies of groups for player 2
 walls_sprites_player2 = walls_sprites.copy()
 paintings_sprites_player2 = paintings_sprites.copy()
 sprites2=pygame.sprite.Group()
-player = Player([500,500], 20, 1)#use first two variables to change spawn position
+player = Player([500,500], 20, 1)#Create player sprites/Note:use first two variables to change spawn position
 sprites.add(player)
 player2 = Player([700, 700], 20, 2)#same as above
 sprites2.add(player2)
-render = pygame.Rect(WIDTH/2 - MAX_DISTANCE * 2, HEIGHT/2 - MAX_DISTANCE * 2, MAX_DISTANCE * 4,MAX_DISTANCE * 4)
-render2 = pygame.Rect((0,0),([WIDTH/2,HEIGHT]))
-renderwalls=pygame.Rect(0, 0, 50,50)
+render = pygame.Rect(WIDTH/2 - MAX_DISTANCE * 2, HEIGHT/2 - MAX_DISTANCE * 2, MAX_DISTANCE * 4,MAX_DISTANCE * 4)#???????????
+render2 = pygame.Rect((0,0),([WIDTH/2,HEIGHT]))#render box for the entire splitscreen of Robber
+renderwalls=pygame.Rect(0, 0, 50,50)#render small player1 render box
+
+#Create both cameras
 camera = Camera(WIDTH, HEIGHT)
 camera2 = Camera(WIDTH, HEIGHT)
-targetangle = 260
-crashed = False
-brightness = 180
-flash_collide = False
-player2_score = 0
-clock = pygame.time.Clock()
-actual = camera.apply(player)
-seen = False
 
-font = pygame.font.SysFont(None,50)
-battery=200
-charging=False
+targetangle = 260#random target angle so it doesn't crash
+crashed = False
+brightness = 180#Brightness of flashlight.
+flash_collide = False
+player2_score = 0#Player score is 0
+clock = pygame.time.Clock()#set up clock
+actual = camera.apply(player)#actual position of player in relation to the map
+seen = False#used for playing alert music
+
+font = pygame.font.SysFont(None,50)#create font
+battery=200#battery charge total
+charging=False#Charging boolean to keep player from moving when charging
+
+#Load images for instructions
 Introscreen1=pygame.transform.scale(pygame.image.load("Graphics/Intro Images/Intro Screen.png"),(700,HEIGHT))
 road=pygame.transform.scale(pygame.image.load("Graphics/Intro Images/Road.png"),(1000,HEIGHT))
 car=pygame.transform.scale(pygame.image.load("Graphics/Intro Images/Car.png"),(100,100))
 robberinstructions=pygame.image.load("Graphics/Intro Images/Robberslide1.png")
-road2=road
-button1=pygame.Rect((250,20),(450,HEIGHT-50))
+road2=road#copy of road for scrolling image(make it look like car is moving down a road)
+button1=pygame.Rect((250,20),(450,HEIGHT-50))#rect on top of painting to click to start game
 Unclicked=True
-while Unclicked:
-    screen.fill((0,0,0))
-    screen.blit(Introscreen1,(140,0))
-    pygame.draw.rect(screen, (125, 124, 200), button1, 1)
-    for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if button1.collidepoint(pygame.mouse.get_pos()):
-                Unclicked=False
-                for x in range(0,800,10):
-                    screen.fill((0, 0, 0))
-                    screen.blit(road, (600-x, 0))
-                    screen.blit(road2, (600+200 - x, 0))
-                    screen.blit(Introscreen1, (140-x, 0))
-                    pygame.display.flip()
 
-    pygame.display.flip()
+#Introduction scenes--------------------------------------------------------------------------------------
+while Unclicked:#First loop of introduction(shows the painting with GO on it)
+    screen.fill((0,0,0))#Fill background
+    screen.blit(Introscreen1,(140,0))#blit the painting/intro screen
+    #pygame.draw.rect(screen, (125, 124, 200), button1, 1)used for debuging(to show rectangle/button area)
+    for event in pygame.event.get():#event loop for checking if player presses painting
+        if event.type == pygame.MOUSEBUTTONDOWN:#if the player clicks
+            if button1.collidepoint(pygame.mouse.get_pos()):#Check if they are clicking the painting
+                Unclicked=False#make it so that it won't loop again/move on to instructions
+                for x in range(0,800,10):#make the paintings move off screen, road move into screen when clicked
+                    screen.fill((0, 0, 0))
+                    screen.blit(road, (600-x, 0))#blit both roads gradually leftwards
+                    screen.blit(road2, (600+200 - x, 0))
+                    screen.blit(Introscreen1, (140-x, 0))#blit painting gradually leftwards
+                    pygame.display.flip()#update screen
+
+    pygame.display.flip()#update screen
+    
+#reseting, setting up variables
 Unclicked=True
 disp=0
 cardisp=0
@@ -408,28 +426,32 @@ cardispy=0
 cardispconst=0.5
 cardispconsty=0.5
 slide=1
-button=buttons(350,50,(0,0,0),"Click to continue",650,400,(255,255,255))
+button=buttons(350,50,(0,0,0),"Click to continue",650,400,(255,255,255))#create button
 
-while Unclicked:
+while Unclicked:#loop for instrucctions
 
-    for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if button.rect.collidepoint(pygame.mouse.get_pos()) and slide>4:
-                Unclicked=False
-        if event.type == pygame.KEYDOWN:
-            if event.key==pygame.K_SPACE or event.key==pygame.K_RIGHT:
-                slide+=1
-            if event.key==pygame.K_LEFT and slide>0:
-                slide-=1
-    if cardisp==-20 or cardisp== 20:
-        cardispconst*=-1
-    if cardispy==-10 or cardispy==10:
-        cardispconsty*=-1
+    for event in pygame.event.get():#event loop, checking if mouse or left, right and space key have been pressed
+        if event.type == pygame.MOUSEBUTTONDOWN:#if the mouse is pressed
+            if button.rect.collidepoint(pygame.mouse.get_pos()) and slide>4:#if the mouse is colliding with the button, is on the final slide
+                Unclicked=False#end loop, move on to cop instructions
+        if event.type == pygame.KEYDOWN:#if any button is pressed
+            if event.key==pygame.K_SPACE or event.key==pygame.K_RIGHT:#if it's a space or right key
+                slide+=1#move forward one slide
+            if event.key==pygame.K_LEFT and slide>1:#if you press left and you're not on the first slide
+                slide-=1#move back one slide
+    #Used to bounce car back and forth to make it look like it's driving around
+    if cardisp==-20 or cardisp== 20:#if it's at an extreme x position
+        cardispconst*=-1 #inverse x "velocity"
+    if cardispy==-10 or cardispy==10:#same as above, a little less bouncing
+        cardispconsty*=-1 #inverse y "velocity"
+    
+    #displace car by velocity
     cardisp+=cardispconst
     cardispy+=cardispconsty
-    disp+=5
-    if disp>=1000:
-        disp=0
+    
+    disp+=5#displacement of road images by 5
+    if disp>=1000: #if a road has moved across the entire screen 
+        disp=0 #loop it around/teleport it to the start again to give an infinite road effect
     screen.fill((0, 0, 0))
     screen.blit(road, (0-disp, 0))
     screen.blit(road2, (0+1000 - disp, 0))
@@ -458,7 +480,7 @@ while Unclicked:
     screen.blit(Guardinstructions,(0,0))
     screen.blit(button.surface,(button.x,button.y))
     pygame.display.flip()
-
+#End of introduction--------------------------------------------------------------------------------------
 
 win=False
 while not crashed:
